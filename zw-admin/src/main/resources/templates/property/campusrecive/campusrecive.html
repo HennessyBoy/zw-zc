@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('资产信息列表')" />
+    <th:block th:include="include :: layout-latest-css" />
+    <th:block th:include="include :: ztree-css" />
+    <script th:src="@{/ajax/libs/laydate/laydate.js}"></script>
+
+</head>
+<body class="gray-bg">
+    <div class="ui-layout-center">
+        <div class="container-div">
+            <div class="row">
+                <div class="col-sm-12 search-collapse">
+                    <form id="formId">
+                        <div class="select-list">
+                            <ul>
+                                <li>
+                                    <p>领用时间：</p>
+                                    <input type="text" name="extend1" id="extend1" placeholder="领用时间"/>
+                                </li>
+                                <li>
+                                    <p>资产名称：</p>
+                                    <input type="text" name="name"/>
+                                </li>
+                                <li>
+                                    <p>资产编号：</p>
+                                    <input type="text" name="assetNum"/>
+                                </li>
+                                <li>
+                                    <p>领用处：</p>
+                                    <select id="extend5" name="extend5" type="text">
+                                        <option value="">全部</option>
+                                        <option th:each="obj,eStat:${school}" th:value="${obj.deptId}"
+                                                 th:text="${obj.deptName}"></option>
+                                    </select>
+                                </li>
+                                <li>
+                                    <p>领用人：</p>
+                                    <input type="text" name="submitOne"/>
+                                </li>
+                                <li style="width: 100%;text-align: center">
+                                    <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                    <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="btn-group-sm" id="toolbar" role="group">
+                    <a class="btn btn-success" onclick="$.operate.addFull()" shiro:hasPermission="property:campusrecive:add">
+                        <i class="fa fa-plus"></i> 领用登记
+                    </a>
+                </div>
+                <div class="col-sm-12 select-table table-striped">
+                    <table id="bootstrap-table" data-mobile-responsive="true"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: ztree-js" />
+    <th:block th:include="include :: layout-latest-js" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('system:management:edit')}]];
+        var prefix = ctx + "property/campusrecive";
+
+        var type=[[${@dict.getType('zc_type')}]];
+        var department=[[${@dict.getType('zc_department')}]];
+        var unit=[[${@dict.getType('zc_unit')}]];
+
+        $(function() {
+            queryList();
+            queryDeptTree();
+        });
+
+        function queryList(){
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                detailUrl: prefix+"/detail/{id}",
+                modalName: "资产信息",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'id',
+                    title : '领用ID',
+                    visible: false
+                },
+                {
+                    field : 'shareTime',
+                    title : '领用时间'
+                },
+                {
+                    field : 'assetNum',
+                    title : '资产编号'
+                },
+                {
+                    field : 'name', 
+                    title : '资产名称'
+                },
+                {
+                    field : 'type',
+                    title : '资产类型',
+                    formatter:function (value, row, index) {
+                        return $.table.selectDictLabel(type,value);
+                    }
+                },
+                {
+                    field : 'brand', 
+                    title : '品牌'
+                },
+                {
+                    field : 'assetSpecification', 
+                    title : '资产规格'
+                },
+                {
+                    field : 'number', 
+                    title : '数量'
+                },
+                {
+                    field : 'units', 
+                    title : '单位',
+                    formatter:function (value, row, index) {
+                        return $.table.selectDictLabel(unit,value);
+                    }
+                },
+                {
+                    field: 'place',
+                    title: '存放地点'
+                },
+                {
+                    field : 'deptName',
+                    title : '领用处'
+                },
+                {
+                    field : 'submittedDepartment',
+                    title : '领用部门',
+                    formatter:function (value, row, index) {
+                        return $.table.selectDictLabel(department,value);
+                    }
+                },
+                {
+                    field : 'submitOne',
+                    title : '领用人员'
+                },
+                {
+                    field : 'extend1',
+                    title : '创建时间'
+                },
+                {
+                    title: '详情',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-info btn-xs ' + editFlag + '" href="#" onclick="$.operate.detail(\'' + row.id + '\')"><i class="fa fa-list-ul"></i>查看</a> ');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        };
+
+        //时间选择器
+        laydate.render({
+            elem: '#extend1'
+            ,trigger: 'click',
+            type:'date'
+            ,range: true
+        });
+
+    </script>
+</body>
+</html>

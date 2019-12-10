@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hp.property.mapper.ZxDiscardMapper">
+
+    <resultMap type="ZxChange" id="ZxChangeResult">
+        <id property="id"    column="id"    />
+        <result property="assetsId"    column="assets_id"    />
+        <result property="changeType"    column="change_type"    />
+        <result property="submittedDepartment"    column="submitted_department"    />
+        <result property="submitOne"    column="submit_one"    />
+        <result property="useDepartment"    column="use_department"    />
+        <result property="users"    column="users"    />
+        <result property="extend1"    column="extend1"    />
+        <result property="extend2"    column="extend2"    />
+        <result property="extend3"    column="extend3"    />
+        <result property="extend4"    column="extend4"    />
+        <result property="extend5"    column="extend5"    />
+        <result property="assetNum"    column="asset_num"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="brand"    column="brand"    />
+        <result property="assetSpecification"    column="asset_specification"    />
+        <result property="number"    column="number"    />
+        <result property="units"    column="units"    />
+        <result property="shareTime"  column="share_time"   />
+        <result property="deptName"     column="dept_name"  />
+    </resultMap>
+
+    <resultMap type="ZxAssetManagement" id="ZxAssetManagementResult">
+        <id property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="assetNum"    column="asset_num"    />
+        <result property="brand"    column="brand"    />
+        <result property="assetSpecification"    column="asset_specification"    />
+        <result property="number"    column="number"    />
+        <result property="type"    column="type"    />
+        <result property="units"    column="units"    />
+        <result property="supplier"    column="supplier"    />
+        <result property="picture"    column="picture"    />
+        <result property="price"    column="price"    />
+        <result property="purchasingTime"    column="purchasing_time"    />
+        <result property="storageTime"    column="storage_time"    />
+        <result property="warehousingCampus"    column="warehousing_campus"    />
+        <result property="state"    column="state"    />
+        <result property="operator"    column="operator"    />
+        <result property="location"    column="location"    />
+        <result property="recipientsTime"    column="recipients_time"    />
+        <result property="repairTime"    column="repair_time"    />
+        <result property="transferTime"    column="transfer_time"    />
+        <result property="discardTime"    column="discard_time"    />
+        <result property="returnTime"    column="return_time"    />
+        <result property="campus"    column="campus"    />
+        <result property="department"    column="department"    />
+        <result property="extend1"    column="extend1"    />
+        <result property="extend2"    column="extend2"    />
+        <result property="extend3"    column="extend3"    />
+        <result property="extend4"    column="extend4"    />
+        <result property="extend5"    column="extend5"    />
+        <result property="shareTime"  column="share_time"   />
+        <result property="useDepartment"    column="use_department"    />
+        <result property="users"    column="users"    />
+        <result property="deptName"     column="dept_name"  />
+        <result property="branch"     column="branch"   />
+        <result property="submittedDepartment"    column="submitted_department"    />
+        <result property="submitOne"    column="submit_one"    />
+    </resultMap>
+
+
+
+    <sql id="selectZxAssetManagementVo">
+        select id, name, asset_num, brand, asset_specification, number, type, units, supplier, picture, price, purchasing_time, storage_time, warehousing_campus, state, operator, location, recipients_time, repair_time, transfer_time, date_format(#{discard_time},'%y%m%d'), return_time, campus, department, extend1, extend2, extend3, extend4, extend5 from zx_asset_management
+    </sql>
+
+    <sql id="selectZxChangeVo">
+        select id, assets_id, change_type, submitted_department, submit_one, use_department, users, extend1, extend2, extend3, extend4, extend5 from zx_change
+    </sql>
+
+    <!--查询变更类型为报废（4）的变更记录-->
+    <select id="selectDiscardList" parameterType="ZxChange" resultMap="ZxChangeResult">
+        select c.*,am.`name`,am.asset_num,am.type,am.brand,am.asset_specification,am.number,am.units,d.dept_name
+        from zx_change c
+        left join zx_asset_management am on c.assets_id = am.id
+        left join sys_dept d on c.extend5 = d.dept_id
+        <where>
+            c.change_type = 4
+            <if test="name != null  and name != ''"> and am.name like concat('%', #{name}, '%')</if>
+            <if test="assetNum != null  and assetNum != ''"> and am.asset_num like concat('%', #{assetNum}, '%')</if>
+            <if test="submittedDepartment != null "> and c.submitted_department = #{submittedDepartment}</if>
+            <if test="submitOne != null  and submitOne != ''"> and c.submit_one like concat('%', #{submitOne}, '%')</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and c.share_time &gt;= #{params.beginTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and c.share_time &lt;= #{params.endTime}
+            </if>
+            <if test="extend5 != null and extend5 != ''"> and c.extend5 = #{extend5}</if>
+        </where>
+        ORDER BY c.extend1 desc
+    </select>
+
+    <!--查询未报废的资产信息-->
+    <select id="selectNoDiscardZxAssetList" parameterType="ZxAssetManagement" resultMap="ZxAssetManagementResult">
+        select am.*,d.dept_name from zx_asset_management am
+        left join sys_dept d on d.dept_id = am.warehousing_campus
+        <where>
+            am.state != 3
+            <if test="name != null  and name != ''"> and am.name like concat('%', #{name}, '%')</if>
+            <if test="extend1 != null and extend1 != '' "> and am.extend1 = #{extend1}</if>
+            <if test="extend2 != null and extend2 != '' "> and am.extend2 like concat('%', #{extend2}, '%')</if>
+            <if test="campus != null "> and am.campus = #{campus}</if>
+        </where>
+    </select>
+
+    <!-- 通过id查询报废详情 -->
+    <select id="selectZxAssetManagementById" parameterType="Long" resultMap="ZxAssetManagementResult">
+        select c.share_time,c.submitted_department,c.submit_one,am.*,d.dept_name,dept.dept_name branch
+        from zx_change c
+        left join zx_asset_management am on c.assets_id = am.id
+        left join sys_dept d on c.extend5 = d.dept_id
+		left join sys_dept dept on dept.dept_id = am.warehousing_campus
+        where c.id = #{id}
+    </select>
+</mapper>

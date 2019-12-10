@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('资产报废信息')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-management1-edit" th:object="${zxAssetManagement}">
+        <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">资产名称：</label>
+                <div class="col-sm-8">
+                    <!-- <label class="col-sm-3 control-label" th:text="*{name}"></label>-->
+                    <input name="name" th:field="*{name}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">资产编号：</label>
+                <div class="col-sm-8">
+                    <!--  <label class="col-sm-3 control-label" th:text="*{assetNum}"></label>-->
+                    <input name="assetNum" th:field="*{assetNum}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">品牌：</label>
+                <div class="col-sm-8">
+                    <!--<label class="col-sm-3 control-label" th:text="*{brand}"></label>-->
+                    <input name="brand" th:field="*{brand}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">资产规格：</label>
+                <div class="col-sm-8">
+                    <!-- <label class="col-sm-3 control-label" th:text="*{assetSpecification}"></label>-->
+                    <input name="assetSpecification" th:field="*{assetSpecification}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">数量：</label>
+                <div class="col-sm-8">
+                    <!--<label class="col-sm-3 control-label" th:text="*{number}"></label>-->
+                    <input name="number" th:field="*{number}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">资产类型：</label>
+                <div class="col-sm-8">
+                    <select name="type"  th:with="type=${@dict.getType('zc_type')}" disabled="disabled">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{type}" readonly="readonly"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">单位：</label>
+                <div class="col-sm-8">
+                    <select name="units"  th:with="unit=${@dict.getType('zc_unit')}" disabled="disabled">
+                        <option th:each="dict : ${unit}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{units}" readonly="readonly"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">供货商：</label>
+                <div class="col-sm-8">
+                    <!--<label class="col-sm-3 control-label" th:text="*{supplier}"></label>-->
+                    <input name="supplier" th:field="*{supplier}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">图片：</label>
+                <div class="col-sm-8">
+                    <img alt="图片" style="width:30px;height:30px;" th:src="*{picture}" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">资产原值：</label>
+                <div class="col-sm-8">
+                    <!--<label class="col-sm-3 control-label" th:text="*{price}"></label>-->
+                    <input name="price" th:field="*{price}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <!--<div class="form-group">
+                <label class="col-sm-3 control-label">购置时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="purchasingTime" th:value="${#dates.format(zxAssetManagement.purchasingTime, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">入库时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="storageTime" th:value="${#dates.format(zxAssetManagement.storageTime, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text" readonly="readonly">
+                    </div>
+                </div>
+            </div>-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label">购置时间：</label>
+                <div class="col-sm-8">
+                    <input name="purchasingTime" th:field="*{purchasingTime}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">入库时间：</label>
+                <div class="col-sm-8">
+                    <input name="storageTime" th:field="*{storageTime}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">入库部门：</label>
+                <div class="col-sm-8">
+                    <input name="branch" th:field="*{branch}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">状态：</label>
+                <div class="col-sm-8">
+                    <input name="status" th:field="*{status}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <!--<div class="form-group">
+                <label class="col-sm-3 control-label">存放地点：</label>
+                <div class="col-sm-8">
+                    <select name="location" th:with="type=${@dict.getType('zc_location')}" disabled="disabled">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{location}" readonly="readonly"></option>
+                    </select>
+                </div>
+            </div>-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label">报废时间：</label>
+                <div class="col-sm-8">
+                    <input name="shareTime" th:field="*{shareTime}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">报废部门：</label>
+                <div class="col-sm-8">
+                    <input name="departmentName" th:field="*{departmentName}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">报废人员：</label>
+                <div class="col-sm-8">
+                    <input name="users" th:field="*{submitOne}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">部门：</label>
+                <div class="col-sm-8">
+                    <input name="deptName" th:field="*{deptName}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+        </form>
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: datetimepicker-js" />
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

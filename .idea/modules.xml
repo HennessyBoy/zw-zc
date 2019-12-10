@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/zw-admin/zw-admin.iml" filepath="$PROJECT_DIR$/zw-admin/zw-admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zw-common/zw-common.iml" filepath="$PROJECT_DIR$/zw-common/zw-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zw-framework/zw-framework.iml" filepath="$PROJECT_DIR$/zw-framework/zw-framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zw-generator/zw-generator.iml" filepath="$PROJECT_DIR$/zw-generator/zw-generator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zw-property/zw-property.iml" filepath="$PROJECT_DIR$/zw-property/zw-property.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zw-quartz/zw-quartz.iml" filepath="$PROJECT_DIR$/zw-quartz/zw-quartz.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zw-system/zw-system.iml" filepath="$PROJECT_DIR$/zw-system/zw-system.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/zw-zc.iml" filepath="$PROJECT_DIR$/.idea/zw-zc.iml" />
+    </modules>
+  </component>
+</project>

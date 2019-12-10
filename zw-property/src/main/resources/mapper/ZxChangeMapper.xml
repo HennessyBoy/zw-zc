@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hp.property.mapper.ZxChangeMapper">
+    
+    <resultMap type="ZxChange" id="ZxChangeResult">
+        <result property="id"    column="id"    />
+        <result property="assetsId"    column="assets_id"    />
+        <result property="changeType"    column="change_type"    />
+        <result property="submittedDepartment"    column="submitted_department"    />
+        <result property="submitOne"    column="submit_one"    />
+        <result property="useDepartment"    column="use_department"    />
+        <result property="users"    column="users"    />
+        <result property="extend1"    column="extend1"    />
+        <result property="extend2"    column="extend2"    />
+        <result property="extend3"    column="extend3"    />
+        <result property="extend4"    column="extend4"    />
+        <result property="extend5"    column="extend5"    />
+        <result property="assetNum"    column="asset_num"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="brand"    column="brand"    />
+        <result property="assetSpecification"    column="asset_specification"    />
+        <result property="number"    column="number"    />
+        <result property="units"    column="units"    />
+        <result property="shareTime"  column="share_time"   />
+        <result property="deptName"     column="dept_name"  />
+        <result property="place"      column="place"    />
+    </resultMap>
+
+    <sql id="selectZxChangeVo">
+        select id, assets_id, change_type, submitted_department, submit_one, use_department, users, extend1, extend2, extend3, extend4, extend5, share_time from zx_change
+    </sql>
+
+    <select id="selectZxChangeList" parameterType="ZxChange" resultMap="ZxChangeResult">
+        <include refid="selectZxChangeVo"/>
+        <where>  
+            <if test="assetsId != null "> and assets_id = #{assetsId}</if>
+            <if test="changeType != null "> and change_type = #{changeType}</if>
+            <if test="submittedDepartment != null "> and submitted_department = #{submittedDepartment}</if>
+            <if test="submitOne != null  and submitOne != ''"> and submit_one = #{submitOne}</if>
+            <if test="useDepartment != null "> and use_department = #{useDepartment}</if>
+            <if test="users != null  and users != ''"> and users = #{users}</if>
+            <if test="extend1 != null  and extend1 != ''"> and extend1 = #{extend1}</if>
+            <if test="extend2 != null  and extend2 != ''"> and extend2 = #{extend2}</if>
+            <if test="extend3 != null  and extend3 != ''"> and extend3 = #{extend3}</if>
+            <if test="extend4 != null  and extend4 != ''"> and extend4 = #{extend4}</if>
+            <if test="extend5 != null  and extend5 != ''"> and extend5 = #{extend5}</if>
+            <if test="shareTime != null and shareTime != '' ">and share_time = #{shareTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectZxChangeById" parameterType="Long" resultMap="ZxChangeResult">
+        <include refid="selectZxChangeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertZxChange" parameterType="ZxChange">
+        insert into zx_change
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null ">id,</if>
+            <if test="assetsId != null ">assets_id,</if>
+            <if test="changeType != null ">change_type,</if>
+            <if test="submittedDepartment != null ">submitted_department,</if>
+            <if test="submitOne != null  and submitOne != ''">submit_one,</if>
+            <if test="useDepartment != null ">use_department,</if>
+            <if test="users != null  and users != ''">users,</if>
+            <if test="extend1 != null  and extend1 != ''">extend1,</if>
+            <if test="extend2 != null  and extend2 != ''">extend2,</if>
+            <if test="extend3 != null  ">extend3,</if>
+            <if test="extend4 != null  and extend4 != ''">extend4,</if>
+            <if test="extend5 != null  and extend5 != ''">extend5,</if>
+            <if test="shareTime != null ">share_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null ">#{id},</if>
+            <if test="assetsId != null ">#{assetsId},</if>
+            <if test="changeType != null ">#{changeType},</if>
+            <if test="submittedDepartment != null ">#{submittedDepartment},</if>
+            <if test="submitOne != null  and submitOne != ''">#{submitOne},</if>
+            <if test="useDepartment != null ">#{useDepartment},</if>
+            <if test="users != null  and users != ''">#{users},</if>
+            <if test="extend1 != null  and extend1 != ''">#{extend1},</if>
+            <if test="extend2 != null  and extend2 != ''">#{extend2},</if>
+            <if test="extend3 != null ">#{extend3},</if>
+            <if test="extend4 != null  and extend4 != ''">#{extend4},</if>
+            <if test="extend5 != null  and extend5 != ''">#{extend5},</if>
+            <if test="shareTime != null ">#{shareTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateZxChange" parameterType="ZxChange">
+        update zx_change
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="assetsId != null ">assets_id = #{assetsId},</if>
+            <if test="changeType != null ">change_type = #{changeType},</if>
+            <if test="submittedDepartment != null ">submitted_department = #{submittedDepartment},</if>
+            <if test="submitOne != null  and submitOne != ''">submit_one = #{submitOne},</if>
+            <if test="useDepartment != null ">use_department = #{useDepartment},</if>
+            <if test="users != null  and users != ''">users = #{users},</if>
+            <if test="extend1 != null  and extend1 != ''">extend1 = #{extend1},</if>
+            <if test="extend2 != null  and extend2 != ''">extend2 = #{extend2},</if>
+            <if test="extend3 != null  and extend3 != ''">extend3 = #{extend3},</if>
+            <if test="extend4 != null  and extend4 != ''">extend4 = #{extend4},</if>
+            <if test="extend5 != null  and extend5 != ''">extend5 = #{extend5},</if>
+            <if test="shareTime != null and shareTime != '' ">share_time = #{shareTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteZxChangeById" parameterType="Long">
+        delete from zx_change where id = #{id}
+    </delete>
+
+    <delete id="deleteZxChangeByIds" parameterType="String">
+        delete from zx_change where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getTimeChange"  parameterType="ZxChange" resultMap="ZxChangeResult">
+        select * from `zx_change` t
+        where 1=1
+        <if test="assetsId != null and assetsId != ''">
+            AND t.`assets_id` = #{assetsId}
+        </if>
+        <if test="oneTime != null and oneTime != ''"><!-- 开始时间检索 -->
+            and date_format(t.extend1,'%y%m%d') &gt;= date_format(#{oneTime},'%y%m%d')
+        </if>
+        <if test="twoTime != null and twoTime != ''"><!-- 结束时间检索 -->
+            and date_format(t.extend1,'%y%m%d') &lt;= date_format(#{twoTime},'%y%m%d')
+        </if>
+    </select>
+
+    <select id="selectZxChangeTransferList" parameterType="ZxChange" resultMap="ZxChangeResult">
+        SELECT c.*, a.asset_num, a.name, a.type, a.brand, a.asset_specification, a.number, a.units
+        FROM `zx_asset_management` a INNER JOIN zx_change c on a.id=c.assets_id
+        where change_type=2
+        <if test="extend1 != null   and extend1 != ''">
+            and date_format(c.extend1,'%y%m%d') = date_format(#{extend1},'%y%m%d')
+        </if>
+        <if test="name != null   and name != ''">
+            AND a.name like concat('%', #{name}, '%')
+        </if>
+        <if test="assetNum != null   and assetNum != ''">
+            and a.asset_num = #{assetNum}
+        </if>
+        <if test="useDepartment != null  and useDepartment != ''">
+            and c.use_department = #{useDepartment}
+        </if>
+        <if test="users != null   and users != ''">
+            AND c.users like concat('%', #{users}, '%')
+        </if>
+        <if test="extend2 != null   and extend2 != ''">
+            AND c.extend4 = #{extend4}
+        </if>
+    </select>
+
+    <insert id="insertZxChangeByAssert" parameterType="ZxAssetManagement">
+        INSERT INTO zx_change
+    </insert>
+
+    <!--查询变动类型为1,即校区领用的所有信息-->
+    <select id="selectAllChangeTypeOne" resultMap="ZxChangeResult" parameterType="ZxChange">
+        SELECT
+        c.*,
+        a.asset_num,
+        a.NAME,
+        a.type,
+        a.brand,
+        a.asset_specification,
+        a.number,
+        a.units,
+        d.dept_name,
+        sd.dept_name place
+        FROM
+        `zx_change` c
+        LEFT JOIN `zx_asset_management` a ON c.assets_id = a.id
+        left join sys_dept d on c.extend5 = d.dept_id
+        left join sys_dept sd on c.extend3 = sd.dept_id
+        <where>
+            c.change_type = 1
+            <if test="extend1 != null and extend1 != ''">
+                and date_format(c.extend1,'%y%m%d') >= date_format(SUBSTR(#{extend1} FROM 1 FOR 10),'%y%m%d')
+                and date_format(c.extend1,'%y%m%d') <![CDATA[ <= ]]> date_format(SUBSTR(#{extend1} FROM 14 FOR 10),'%y%m%d')
+            </if>
+            <if test="name != null  and name != ''"> and a.name like concat("%", #{name}, "%")</if>
+            <if test="assetNum != null  and assetNum != ''"> and a.asset_num like concat("%",#{assetNum},"%")</if>
+            <if test="extend4 != null and extend4 != 100 and extend4 != ''"> and c.extend4 = #{extend4}</if>
+            <if test="extend5 != null "> and c.extend5 = #{extend5}</if>
+            <if test="submitOne != null  and submitOne != ''"> and c.submit_one like concat("%",#{submitOne},"%")</if>
+        </where>
+        ORDER BY c.extend1 DESC
+    </select>
+
+    <!-- 查询部门领用列表 -->
+    <select id="selectDeptReceiveList" parameterType="ZxChange" resultMap="ZxChangeResult">
+        select c.*,am.`name`,am.asset_num,am.type,am.brand,am.asset_specification,am.number,am.units,d.dept_name,sd.dept_name place
+        from zx_change c
+        left join zx_asset_management am on c.assets_id = am.id
+        left join sys_dept d on c.extend5 = d.dept_id
+        left join sys_dept sd on c.extend3 = sd.dept_id
+        <where>
+            c.change_type = 6
+            <if test="name != null  and name != ''"> and am.name like concat('%', #{name}, '%')</if>
+            <if test="assetNum != null  and assetNum != ''"> and am.asset_num like concat('%', #{assetNum}, '%')</if>
+            <if test="submittedDepartment != null "> and c.submitted_department = #{submittedDepartment}</if>
+            <if test="submitOne != null  and submitOne != ''"> and c.submit_one like concat('%', #{submitOne}, '%')</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and c.share_time &gt;= #{params.beginTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and c.share_time &lt;= #{params.endTime}
+            </if>
+            <if test="extend5 != null and extend5 != ''"> and c.extend5 = #{extend5}</if>
+            <if test="extend3 != null and extend3 != ''"> and c.extend3 = #{extend3}</if>
+        </where>
+        ORDER BY c.extend1 desc
+    </select>
+
+</mapper>

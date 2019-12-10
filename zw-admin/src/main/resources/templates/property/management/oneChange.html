@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('资产信息列表')" />
+    <script th:src="@{/ajax/libs/laydate/laydate.js}"></script>
+</head>
+<body class="gray-bg">
+<div class="ui-layout-center">
+    <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <input type="hidden" id="id" name="assetsId" th:value="${id}" />
+
+                    时间控制：<input type="text" id="startTime" name="startTime" />
+                    <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()">搜索</a>
+                </form>
+            </div>
+
+            <!--<div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-info" onclick="$.table.importExcel()" shiro:hasPermission="property:management:import">
+                    <i class="fa fa-upload"></i> 导入
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="property:management:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>-->
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table" data-mobile-responsive="true"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:include="include :: footer" />
+
+<script th:inline="javascript">
+    var zc_change = [[${@dict.getType('zc_change')}]];
+    var zc_department = [[${@dict.getType('zc_department')}]];
+    var editFlag = [[${@permission.hasPermi('system:management:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('system:management:remove')}]];
+    var prefix = ctx + "property/management";
+
+    $(function() {
+
+        queryList();
+    });
+    $(function(){
+        //时间选择器
+        laydate.render({
+            elem: '#startTime',trigger: 'click',range: true
+        });
+    });
+    function queryList(){
+        var options = {
+            url: prefix + "/oneChange",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            detailUrl: prefix+"/onee/{id}",
+            modalName: "资产变更记录",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field : 'assetsId',
+                    title : '资产ID',
+                    visible: false
+                },
+                {
+                    field : 'extend1',
+                    title : '操作日期'
+                },
+                {
+                    field : 'changeType',
+                    title : '变动类型',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(zc_change,value);
+                    }
+                },
+                {
+                    field : 'submittedDepartment',
+                    title : '提交部门',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(zc_department,value);
+                    }
+                },
+                {
+                    field : 'submitOne',
+                    title : '提交人员'
+                },
+                {
+                    field : 'useDepartment',
+                    title : '使用部门',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(zc_department,value);
+                    }
+                },
+                {
+                    field : 'users',
+                    title : '使用人员'
+                }]
+        };
+        $.table.init(options);
+    }
+</script>
+</body>
+</html>

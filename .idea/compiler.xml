@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="zw-admin" />
+        <module name="zw-common" />
+        <module name="zw-framework" />
+        <module name="zw-generator" />
+        <module name="zw-property" />
+        <module name="zw-quartz" />
+        <module name="zw-system" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="zw-admin" target="1.8" />
+      <module name="zw-common" target="1.8" />
+      <module name="zw-framework" target="1.8" />
+      <module name="zw-generator" target="1.8" />
+      <module name="zw-property" target="1.8" />
+      <module name="zw-quartz" target="1.8" />
+      <module name="zw-system" target="1.8" />
+      <module name="zw-zc" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

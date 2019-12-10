@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hp.property.mapper.ZxAssetManagementMapper">
+    
+    <resultMap type="ZxAssetManagement" id="ZxAssetManagementResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="assetNum"    column="asset_num"    />
+        <result property="brand"    column="brand"    />
+        <result property="assetSpecification"    column="asset_specification"    />
+        <result property="number"    column="number"    />
+        <result property="type"    column="type"    />
+        <result property="units"    column="units"    />
+        <result property="supplier"    column="supplier"    />
+        <result property="picture"    column="picture"    />
+        <result property="price"    column="price"    />
+        <result property="purchasingTime"    column="purchasing_time"    />
+        <result property="storageTime"    column="storage_time"    />
+        <result property="warehousingCampus"    column="warehousing_campus"    />
+        <result property="state"    column="state"    />
+        <result property="operator"    column="operator"    />
+        <result property="location"    column="location"    />
+        <result property="recipientsTime"    column="recipients_time"    />
+        <result property="repairTime"    column="repair_time"    />
+        <result property="transferTime"    column="transfer_time"    />
+        <result property="discardTime"    column="discard_time"    />
+        <result property="returnTime"    column="return_time"    />
+        <result property="campus"    column="campus"    />
+        <result property="department"    column="department"    />
+        <result property="extend1"    column="extend1"    />
+        <result property="extend2"    column="extend2"    />
+        <result property="extend3"    column="extend3"    />
+        <result property="extend4"    column="extend4"    />
+        <result property="extend5"    column="extend5"    />
+        <result property="deptName"     column="dept_name"  />
+    </resultMap>
+
+    <resultMap type="ZxChange" id="ZxChangeResult">
+        <result property="id"    column="id"    />
+        <result property="assetsId"    column="assets_id"    />
+        <result property="changeType"    column="change_type"    />
+        <result property="submittedDepartment"    column="submitted_department"    />
+        <result property="submitOne"    column="submit_one"    />
+        <result property="useDepartment"    column="use_department"    />
+        <result property="users"    column="users"    />
+        <result property="extend1"    column="extend1"    />
+        <result property="extend2"    column="extend2"    />
+        <result property="extend3"    column="extend3"    />
+        <result property="extend4"    column="extend4"    />
+        <result property="extend5"    column="extend5"    />
+        <result property="assetNum"    column="asset_num"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="brand"    column="brand"    />
+        <result property="assetSpecification"    column="asset_specification"    />
+        <result property="number"    column="number"    />
+        <result property="units"    column="units"    />
+    </resultMap>
+
+    <sql id="selectZxAssetManagementVo">
+        select id, name, asset_num, brand, asset_specification, number, type, units, supplier, picture, price, purchasing_time, storage_time, warehousing_campus, state, operator, location, recipients_time, repair_time, transfer_time, discard_time, return_time, campus, department, extend1, extend2, extend3, extend4, extend5 from zx_asset_management
+    </sql>
+
+    <select id="selectZxAssetManagementList" parameterType="ZxAssetManagement" resultMap="ZxAssetManagementResult">
+        select a.*,b.dept_name from zx_asset_management a LEFT JOIN sys_dept b ON a.location = b.dept_id
+        <where>
+            <if test="name != null  and name != ''"> and a.name like concat('%', #{name}, '%')</if>
+            <if test="assetNum != null  and assetNum != ''"> and a.asset_num like concat('%', #{assetNum}, '%')</if>
+            <if test="brand != null  and brand != ''"> and a.brand = #{brand}</if>
+            <if test="assetSpecification != null  and assetSpecification != ''"> and a.asset_specification = #{assetSpecification}</if>
+            <if test="number != null "> and a.number = #{number}</if>
+            <if test="type != null and type != ''"> and a.type = #{type}</if>
+            <if test="units != null "> and a.units = #{units}</if>
+            <if test="supplier != null  and supplier != ''"> and a.supplier = #{supplier}</if>
+            <if test="picture != null  and picture != ''"> and a.picture = #{picture}</if>
+            <if test="price != null "> and a.price = #{price}</if>
+            <if test="purchasingTime != null and purchasingTime != ''">
+                and date_format(a.purchasing_time,'%y%m%d') >= date_format(SUBSTR(#{purchasingTime} FROM 1 FOR 10),'%y%m%d')
+                and date_format(a.purchasing_time,'%y%m%d') <![CDATA[ <= ]]> date_format(SUBSTR(#{purchasingTime} FROM 14 FOR 10),'%y%m%d')
+            </if>
+            <if test="storageTime != null and storageTime != ''">
+                and date_format(a.storage_time,'%y%m%d') >= date_format(SUBSTR(#{storageTime} FROM 1 FOR 10),'%y%m%d')
+                and date_format(a.storage_time,'%y%m%d') <![CDATA[ <= ]]> date_format(SUBSTR(#{storageTime} FROM 14 FOR 10),'%y%m%d')
+            </if>
+            <if test="warehousingCampus != null and warehousingCampus != 100"> and a.warehousing_campus = #{warehousingCampus}</if>
+            <if test="state != null "> and a.state = #{state}</if>
+            <if test="operator != null  and operator != ''"> and a.operator = #{operator}</if>
+            <if test="location != null "> and a.location = #{location}</if>
+            <if test="recipientsTime != null "> and a.recipients_time = #{recipientsTime}</if>
+            <if test="repairTime != null "> and a.repair_time = #{repairTime}</if>
+            <if test="transferTime != null "> and a.transfer_time = #{transferTime}</if>
+            <if test="discardTime != null "> and a.discard_time = #{discardTime}</if>
+            <if test="returnTime != null "> and a.return_time = #{returnTime}</if>
+            <if test="campus != null "> and a.campus = #{campus}</if>
+            <if test="department != null "> and a.department = #{department}</if>
+            <if test="extend1 != null  and extend1 != ''"> and a.extend1 = #{extend1}</if>
+            <if test="extend2 != null  and extend2 != ''"> and a.extend2 like concat('%', #{extend2}, '%')</if>
+            <if test="extend3 != null  and extend3 != ''"> and a.extend3 = #{extend3}</if>
+            <if test="extend4 != null  and extend4 != ''"> and a.extend4 = #{extend4}</if>
+            <if test="extend5 != null  and extend5 != ''"> and a.extend5 = #{extend5}</if>
+        </where>
+        order by storage_time desc,asset_num desc
+    </select>
+
+
+    <select id="selectZxAssetManagementById" parameterType="Long" resultMap="ZxAssetManagementResult">
+        <include refid="selectZxAssetManagementVo"/>
+        where id = #{id}
+    </select>
+
+    <!-- 弹框列表 -->
+    <select id="selectAssetManagementLists" resultMap="ZxAssetManagementResult" parameterType="ZxAssetManagement">
+        select am.*,d.dept_name from zx_asset_management am
+        left join sys_dept d on d.dept_id = am.warehousing_campus
+        <where>
+            <if test="id != null ">and am.id = #{id}</if>
+            <if test="state != null "> and am.state = #{state}</if>
+            <if test="name != null  and name != ''"> and am.name like concat('%', #{name}, '%')</if>
+            <if test="extend1 != null and extend1 != '' "> and am.extend1 = #{extend1}</if>
+            <if test="extend2 != null and extend2 != '' "> and am.extend2 like concat('%', #{extend2}, '%')</if>
+            <if test="extend3 != null  and extend3 != ''"> and am.extend3 = #{extend3}</if>
+            <if test="campus != null "> and am.campus = #{campus}</if>
+        </where>
+        order by asset_num desc
+    </select>
+
+    <!-- 弹框选择后显示在添加页面的列表 -->
+    <select id="selectAssetManagementListById" resultMap="ZxAssetManagementResult" parameterType="ZxAssetManagement">
+        select am.*,d.dept_name from zx_asset_management am
+        left join sys_dept d on d.dept_id = am.warehousing_campus
+        <where>
+            <if test="id != null ">and am.id = #{id}</if>
+            <if test="name != null  and name != ''"> and am.name like concat('%', #{name}, '%')</if>
+            <if test="extend1 != null and extend1 != '' "> and am.extend1 = #{extend1}</if>
+            <if test="extend2 != null and extend2 != '' "> and am.extend2 like concat('%', #{extend2}, '%')</if>
+        </where>
+    </select>
+
+    <!--查询所有值-->
+    <select id="allZxAssetManagement" resultType="int">
+        select count(id) from zx_asset_management
+    </select>
+
+    <!--获取资产编号最大值-->
+    <select id="getMaxNum" parameterType="ZxAssetManagement" resultType="string">
+        SELECT Max(asset_num) FROM zx_asset_management WHERE type = #{type}
+    </select>
+
+    <!--获取当前最大ID值-->
+    <select id="getMaxId" resultMap="ZxAssetManagementResult">
+        SELECT `id` FROM `zx_asset_management` WHERE `id`=(SELECT MAX(`id`) FROM `zx_asset_management`)
+    </select>
+        
+    <insert id="insertZxAssetManagement" parameterType="ZxAssetManagement">
+        insert into zx_asset_management
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null ">id,</if>
+            <if test="name != null  and name != ''">name,</if>
+            <if test="assetNum != null  and assetNum != ''">asset_num,</if>
+            <if test="brand != null  and brand != ''">brand,</if>
+            <if test="assetSpecification != null  and assetSpecification != ''">asset_specification,</if>
+            <if test="number != null ">number,</if>
+            <if test="type != null ">type,</if>
+            <if test="units != null ">units,</if>
+            <if test="supplier != null  and supplier != ''">supplier,</if>
+            <if test="picture != null  and picture != ''">picture,</if>
+            <if test="price != null ">price,</if>
+            <if test="purchasingTime != null ">purchasing_time,</if>
+            <if test="storageTime != null ">storage_time,</if>
+            <if test="warehousingCampus != null ">warehousing_campus,</if>
+            <if test="state != null ">state,</if>
+            <if test="operator != null  and operator != ''">operator,</if>
+            <if test="location != null ">location,</if>
+            <if test="recipientsTime != null ">recipients_time,</if>
+            <if test="repairTime != null ">repair_time,</if>
+            <if test="transferTime != null ">transfer_time,</if>
+            <if test="discardTime != null ">discard_time,</if>
+            <if test="returnTime != null ">return_time,</if>
+            <if test="campus != null ">campus,</if>
+            <if test="department != null ">department,</if>
+            <if test="extend1 != null  and extend1 != ''">extend1,</if>
+            <if test="extend2 != null  and extend2 != ''">extend2,</if>
+            <if test="extend3 != null  and extend3 != ''">extend3,</if>
+            <if test="extend4 != null  and extend4 != ''">extend4,</if>
+            <if test="extend5 != null  and extend5 != ''">extend5,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null ">#{id},</if>
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="assetNum != null  and assetNum != ''">#{assetNum},</if>
+            <if test="brand != null  and brand != ''">#{brand},</if>
+            <if test="assetSpecification != null  and assetSpecification != ''">#{assetSpecification},</if>
+            <if test="number != null ">#{number},</if>
+            <if test="type != null ">#{type},</if>
+            <if test="units != null ">#{units},</if>
+            <if test="supplier != null  and supplier != ''">#{supplier},</if>
+            <if test="picture != null  and picture != ''">#{picture},</if>
+            <if test="price != null ">#{price},</if>
+            <if test="purchasingTime != null ">#{purchasingTime},</if>
+            <if test="storageTime != null ">#{storageTime},</if>
+            <if test="warehousingCampus != null ">#{warehousingCampus},</if>
+            <if test="state != null ">#{state},</if>
+            <if test="operator != null  and operator != ''">#{operator},</if>
+            <if test="location != null ">#{location},</if>
+            <if test="recipientsTime != null ">#{recipientsTime},</if>
+            <if test="repairTime != null ">#{repairTime},</if>
+            <if test="transferTime != null ">#{transferTime},</if>
+            <if test="discardTime != null ">#{discardTime},</if>
+            <if test="returnTime != null ">#{returnTime},</if>
+            <if test="campus != null ">#{campus},</if>
+            <if test="department != null ">#{department},</if>
+            <if test="extend1 != null  and extend1 != ''">#{extend1},</if>
+            <if test="extend2 != null  and extend2 != ''">#{extend2},</if>
+            <if test="extend3 != null  and extend3 != ''">#{extend3},</if>
+            <if test="extend4 != null  and extend4 != ''">#{extend4},</if>
+            <if test="extend5 != null  and extend5 != ''">#{extend5},</if>
+         </trim>
+    </insert>
+
+
+
+    <update id="updateZxAssetManagement" parameterType="ZxAssetManagement">
+        update zx_asset_management
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="assetNum != null  and assetNum != ''">asset_num = #{assetNum},</if>
+            <if test="brand != null  and brand != ''">brand = #{brand},</if>
+            <if test="assetSpecification != null  and assetSpecification != ''">asset_specification = #{assetSpecification},</if>
+            <if test="number != null ">number = #{number},</if>
+            <if test="type != null ">type = #{type},</if>
+            <if test="units != null ">units = #{units},</if>
+            <if test="supplier != null  and supplier != ''">supplier = #{supplier},</if>
+            <if test="picture != null  and picture != ''">picture = #{picture},</if>
+            <if test="price != null ">price = #{price},</if>
+            <if test="purchasingTime != null ">purchasing_time = #{purchasingTime},</if>
+            <if test="storageTime != null ">storage_time = #{storageTime},</if>
+            <if test="warehousingCampus != null ">warehousing_campus = #{warehousingCampus},</if>
+            <if test="state != null ">state = #{state},</if>
+            <if test="operator != null  and operator != ''">operator = #{operator},</if>
+            <if test="location != null ">location = #{location},</if>
+            <if test="recipientsTime != null ">recipients_time = #{recipientsTime},</if>
+            <if test="repairTime != null ">repair_time = #{repairTime},</if>
+            <if test="transferTime != null ">transfer_time = #{transferTime},</if>
+            <if test="discardTime != null ">discard_time = #{discardTime},</if>
+            <if test="returnTime != null ">return_time = #{returnTime},</if>
+            <if test="campus != null ">campus = #{campus},</if>
+            <if test="department != null ">department = #{department},</if>
+            <if test="extend1 != null ">extend1 = #{extend1},</if>
+            <if test="extend2 != null  ">extend2 = #{extend2},</if>
+            <if test="extend3 != null  ">extend3 = #{extend3},</if>
+            <if test="extend4 != null  and extend4 != ''">extend4 = #{extend4},</if>
+            <if test="extend5 != null  and extend5 != ''">extend5 = #{extend5},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateZxAssetManagementByAssetNum" parameterType="ZxAssetManagement">
+        update zx_asset_management
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''">name = #{name},</if>
+<!--            <if test="assetNum != null  and assetNum != ''">asset_num = #{assetNum},</if>-->
+            <if test="brand != null  and brand != ''">brand = #{brand},</if>
+            <if test="assetSpecification != null  and assetSpecification != ''">asset_specification = #{assetSpecification},</if>
+            <if test="number != null ">number = #{number},</if>
+            <if test="type != null ">type = #{type},</if>
+            <if test="units != null ">units = #{units},</if>
+            <if test="supplier != null  and supplier != ''">supplier = #{supplier},</if>
+            <if test="picture != null  and picture != ''">picture = #{picture},</if>
+            <if test="price != null ">price = #{price},</if>
+            <if test="purchasingTime != null ">purchasing_time = #{purchasingTime},</if>
+            <if test="storageTime != null ">storage_time = #{storageTime},</if>
+            <if test="warehousingCampus != null ">warehousing_campus = #{warehousingCampus},</if>
+            <if test="state != null ">state = #{state},</if>
+            <if test="operator != null  and operator != ''">operator = #{operator},</if>
+            <if test="location != null ">location = #{location},</if>
+            <if test="recipientsTime != null ">recipients_time = #{recipientsTime},</if>
+            <if test="repairTime != null ">repair_time = #{repairTime},</if>
+            <if test="transferTime != null ">transfer_time = #{transferTime},</if>
+            <if test="discardTime != null ">discard_time = #{discardTime},</if>
+            <if test="returnTime != null ">return_time = #{returnTime},</if>
+            <if test="campus != null ">campus = #{campus},</if>
+            <if test="department != null ">department = #{department},</if>
+            <if test="extend1 != null  and extend1 != ''">extend1 = #{extend1},</if>
+            <if test="extend2 != null  and extend2 != ''">extend2 = #{extend2},</if>
+            <if test="extend3 != null  and extend3 != ''">extend3 = #{extend3},</if>
+            <if test="extend4 != null  and extend4 != ''">extend4 = #{extend4},</if>
+            <if test="extend5 != null  and extend5 != ''">extend5 = #{extend5},</if>
+        </trim>
+        where asset_num = #{assetNum}
+    </update>
+
+
+    <delete id="deleteZxAssetManagementById" parameterType="Long">
+        delete from zx_asset_management where id = #{id}
+    </delete>
+
+    <delete id="deleteZxAssetManagementByIds" parameterType="String">
+        delete from zx_asset_management where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <!--查询所有资产为闲置状态的信息-->
+    <select id="selectAllStateOne" resultMap="ZxAssetManagementResult" parameterType="ZxAssetManagement">
+        <include refid="selectZxAssetManagementVo"/> WHERE state = #{state}
+    </select>
+
+    <!--修改资产状态的状态：闲置变为领用-->
+    <update id="updateZxAssertManagement" parameterType="string">
+        UPDATE zx_asset_management SET state = 2 WHERE id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!--插入多条记录-->
+    <insert id="insertZxChange" parameterType="ZxChange">
+        insert into zx_change
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null ">id,</if>
+            <if test="assetsId != null ">assets_id,</if>
+            <if test="changeType != null ">change_type,</if>
+            <if test="submittedDepartment != null ">submitted_department,</if>
+            <if test="submitOne != null  and submitOne != ''">submit_one,</if>
+            <if test="useDepartment != null ">use_department,</if>
+            <if test="users != null  and users != ''">users,</if>
+            <if test="extend1 != null  and extend1 != ''">extend1,</if>
+            <if test="extend2 != null  and extend2 != ''">extend2,</if>
+            <if test="extend3 != null  and extend3 != ''">extend3,</if>
+            <if test="extend4 != null  and extend4 != ''">extend4,</if>
+            <if test="extend5 != null  and extend5 != ''">extend5,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null ">#{id},</if>
+            <if test="assetsId != null ">#{assetsId},</if>
+            <if test="changeType != null ">#{changeType},</if>
+            <if test="submittedDepartment != null ">#{submittedDepartment},</if>
+            <if test="submitOne != null  and submitOne != ''">#{submitOne},</if>
+            <if test="useDepartment != null ">#{useDepartment},</if>
+            <if test="users != null  and users != ''">#{users},</if>
+            <if test="extend1 != null  and extend1 != ''">#{extend1},</if>
+            <if test="extend2 != null  and extend2 != ''">#{extend2},</if>
+            <if test="extend3 != null  and extend3 != ''">#{extend3},</if>
+            <if test="extend4 != null  and extend4 != ''">#{extend4},</if>
+            <if test="extend5 != null  and extend5 != ''">#{extend5},</if>
+        </trim>
+    </insert>
+
+
+    <!--查询变更表对应资产信息列表中领用的记录-->
+    <select id="selectZxAssetManagementListById" parameterType="ZxAssetManagement" resultMap="ZxAssetManagementResult">
+        <include refid="selectZxAssetManagementVo"/>
+        <where>
+            id = #{id}
+            <if test="extend4 != null and extend4 != ''">
+                and recipients_time >= date_format(SUBSTR(#{extend4} FROM 1 FOR 10),'%y%m%d')
+                and recipients_time <![CDATA[ <= ]]> date_format(SUBSTR(#{extend4} FROM 14 FOR 10),'%y%m%d')
+            </if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="assetNum != null  and assetNum != ''"> and asset_num = #{assetNum}</if>
+            <if test="campus != null "> and campus = #{campus}</if>
+            <if test="extend2 != null  and extend2 != ''"> and extend2 = #{extend2}</if>
+        </where>
+</select>
+
+
+
+    <!--部门领用-->
+    <select id="selectAAAStateTwo" resultMap="ZxAssetManagementResult" parameterType="ZxAssetManagement">
+        select * from `zx_asset_management`
+        where 1=1
+        and id=#{id}
+        <if test="oneTime != null and oneTime != ''"><!-- 开始时间检索 -->
+            and date_format(recipients_time,'%y%m%d') &gt;= date_format(#{oneTime},'%y%m%d')
+        </if>
+        <if test="twoTime != null and twoTime != ''"><!-- 开始时间检索 -->
+            and date_format(recipients_time,'%y%m%d') &gt;= date_format(#{twoTime},'%y%m%d')
+        </if>
+        <if test="name != null and name != ''">
+            AND `name` like concat('%',#{name},'%')
+        </if>
+        <if test="assetNum != null and assetNum != ''">
+            AND `assetNum` like concat('%',#{assetNum},'%')
+        </if>
+        <if test="extend1 != null and extend1 != ''">
+            AND `extend1` = #{extend1}
+        </if>
+        <if test="extend2 != null and extend2 != ''">
+            AND `extend2` like concat('%',#{extend2},'%')
+        </if>
+        <if test="campus != null and campus != ''">
+            AND `campus` like concat('%',#{campus},'%')
+        </if>
+    </select>
+
+    <select id="getCountByType" resultType="int">
+        select count(*) from zx_asset_management where type = #{type}
+    </select>
+
+    <!--校区领用详情页-->
+    <select id="selectZxAssetManagementById2" parameterType="long" resultMap="ZxAssetManagementResult">
+        select  am.`name`,am.asset_num,am.brand,am.asset_specification,am.number,am.type,am.units,am.supplier,am.picture,am.price,am.purchasing_time,am.storage_time,am.warehousing_campus,am.state,am.operator,am.location,c.share_time,c.use_department,c.users,c.extend4,d.dept_name,dept.dept_name branch
+        from zx_change c
+        left join zx_asset_management am on c.assets_id = am.id
+        left join sys_dept d on c.extend4 = d.dept_id
+		left join sys_dept dept on dept.dept_id = am.warehousing_campus
+        where c.id = #{id}
+    </select>
+
+</mapper>

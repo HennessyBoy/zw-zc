@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('资产信息列表')" />
+    <link th:href="@{/ajax/libs/jquery-layout/jquery.layout-latest.css}" rel="stylesheet"/>
+    <th:block th:include="include :: ztree-css" />
+</head>
+<body class="gray-bg">
+<!--<div class="ui-layout-west">
+    <div class="box box-main">
+        <div class="box-header">
+            <div class="box-title">
+                <i class="fa icon-grid"></i> 组织机构
+            </div>
+            <div class="box-tools pull-right">
+                <a type="button" class="btn btn-box-tool" href="#" onclick="dept()" title="管理部门"><i class="fa fa-edit"></i></a>
+                <button type="button" class="btn btn-box-tool" id="btnExpand" title="展开" style="display:none;"><i class="fa fa-chevron-up"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnCollapse" title="折叠"><i class="fa fa-chevron-down"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnRefresh" title="刷新部门"><i class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+        <div class="ui-layout-content">
+            <div id="tree" class="ztree"></div>
+        </div>
+    </div>
+</div>-->
+
+
+<div class="ui-layout-center">
+    <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <p>资产名称：</p>
+                                <input type="text" name="name"/>
+                            </li>
+                            <li>
+                                <p>资产编号：</p>
+                                <input type="text" name="assetNum"/>
+                            </li>
+                            <li>
+                                <p>资产类型：</p>
+                                <select name="type" th:with="type=${@dict.getType('zc_type')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <p>使用部门：</p>
+                                <select name="extend1" class="form-control m-b" th:with="type=${@dict.getType('zc_department')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <p>使用人：</p>
+                                <input type="text" name="extend2"/>
+                            </li>
+                            <li>
+                                <p>状态：</p>
+                                <select name="state" th:with="type=${@dict.getType('zc_state')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <p>存放地点：</p>
+                                <select id="extend3" name="location" class="form-control m-b" type="text">
+                                    <option value="">所有</option>
+                                    <option th:each="obj,eStat:${deptList}" th:value="${obj.deptId}"
+                                            th:text="${obj.deptName}"></option>
+                                </select>
+                            </li>
+                            <li style="width: 100%;text-align: center">
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-info" onclick="$.table.importExcel()" shiro:hasPermission="property:management:import">
+                    <i class="fa fa-upload"></i> 导入
+                </a>
+                <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="property:management:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table" data-mobile-responsive="true"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: ztree-js" />
+    <script th:src="@{/ajax/libs/jquery-layout/jquery.layout-latest.js}"></script>
+    <script th:inline="javascript">
+        var types = [[${@dict.getType('zc_type')}]];
+        var zc_location = [[${@dict.getType('zc_location')}]];
+        var zc_unit = [[${@dict.getType('zc_unit')}]];
+        var zc_department = [[${@dict.getType('zc_department')}]];
+        var zc_state = [[${@dict.getType('zc_state')}]];
+        var editFlag = [[${@permission.hasPermi('system:management:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('system:management:remove')}]];
+        var prefix = ctx + "property/management";
+
+        $(function() {
+            var panehHidden = false;
+            if ($(this).width() < 769) {
+                panehHidden = true;
+            }
+            $('body').layout({ initClosed: panehHidden, west__size: 185 });
+            queryList();
+            queryDeptTree();
+        });
+
+        function queryList(){
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                importUrl: prefix + "/importData",
+                importTemplateUrl: prefix + "/importTemplate",
+                detailUrl: prefix+"/one/{id}",
+                modalName: "资产信息",
+                columns: [{
+                    checkbox: true
+                },
+                    {
+                        field : 'id',
+                        title : '资产ID',
+                        visible: false
+                    },
+                    {
+                        field : 'assetNum',
+                        title : '资产编号'
+                    },
+                    {
+                        field : 'name',
+                        title : '资产名称'
+                    },
+                    {
+                        field : 'type',
+                        title : '资产类型',
+                        formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(types,value);
+                        }
+                    },
+                    {
+                        field : 'brand',
+                        title : '品牌'
+                    },
+                    {
+                        field : 'assetSpecification',
+                        title : '资产规格'
+                    },
+                    {
+                        field : 'number',
+                        title : '数量'
+                    },
+
+                    {
+                        field : 'units',
+                        title : '单位',
+                        formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(zc_unit,value);
+                        }
+                    },
+                    {
+                        field : 'extend1',
+                        title : '使用部门',
+                        formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(zc_department,value);
+                        }
+                    },
+                    {
+                        field : 'extend2',
+                        title : '使用人'
+                    },
+                    {
+                        field : 'deptName',
+                        title : '存放地点'
+                        /*formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(zc_location,value);
+                        }*/
+                    },
+                    {
+                        field : 'extend5',
+                        title : '所属部门'
+                    },
+                    {
+                        field : 'state',
+                        title : '物品状态',
+                        formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(zc_state,value);
+                        }
+                    },
+                    {
+                        field : 'extend3',
+                        title : '报修状态',
+                        formatter: function(value, item, index) {
+                            if (item.extend3 == '1') {
+                                return '报修中';
+                            }
+                            else {
+                                return '正常';
+                            }
+                        }
+                    },
+                    {
+                        title: '操作',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            var actions = [];
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.detail(\'' + row.id + '\')"><i class="fa fa-edit"></i>详情</a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="zcchange('+row.id+')"><i class="fa fa-remove"></i>变更记录</a>');
+                            return actions.join('');
+                        }
+                    }]
+            };
+            $.table.init(options);
+        }
+
+        function queryDeptTree()
+        {
+            var url = ctx + "system/dept/treeData";
+            var options = {
+                url: url,
+                expandLevel: 2,
+                onClick : zOnClick
+            };
+            $.tree.init(options);
+
+            function zOnClick(event, treeId, treeNode) {
+                $("#deptId").val(treeNode.id);
+                $("#parentId").val(treeNode.pId);
+                $.table.search();
+            }
+        }
+        function zcchange(id) {
+            var _url = prefix + "/oneChangee/"+id;
+            $.modal.open($.table._option.modalName + "变更记录",_url,"1000","400")
+            /*var options = {
+                title: $.table._option.modalName + "变更记录",
+                width: '1500px',
+                height: '1500px',
+                url: _url,
+                skin: 'layui-layer-gray',
+                btn: ['关闭'],
+                yes: function (index, layero) {
+                    layer.close(index);
+                }
+            };
+            $.modal.openOptions(options);*/
+        }
+    </script>
+</body>
+<form id="importForm" enctype="multipart/form-data" class="mt20 mb10" style="display: none;">
+    <div class="col-xs-offset-1">
+        <input type="file" id="file" name="file"/>
+        <div class="mt10 pt5">
+            <input type="checkbox" id="updateSupport" name="updateSupport" title="如果登录账户已经存在，更新这条数据。"> 是否更新已经存在的用户数据
+            &nbsp;	<a onclick="$.table.importTemplate()" class="btn btn-default btn-xs"><i class="fa fa-file-excel-o"></i> 下载模板</a>
+        </div>
+        <font color="red" class="pull-left mt10">
+            提示：仅允许导入“xls”或“xlsx”格式文件！
+        </font>
+    </div>
+</form>
+</html>

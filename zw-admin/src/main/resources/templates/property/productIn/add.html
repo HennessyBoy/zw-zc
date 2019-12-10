@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('入库登记')"/>
+    <th:block th:include="include :: datetimepicker-css"/>
+    <script th:src="@{/ajax/libs/laydate/laydate.js}"></script>
+</head>
+<style>
+
+    .uploadImgBtn {
+        width: 106px;
+        height: 36px;
+        display: inline-block;
+        cursor: pointer;
+        position: relative;
+        background: url("https://whhp.oss-cn-hangzhou.aliyuncs.com/app/photo4.png") no-repeat;
+        -webkit-background-size: cover;
+        background-size: cover;
+    }
+
+    input[type="file"]{
+        width: 100px;
+        opacity: 0;
+        position: absolute;
+        top: 0px;
+        height: 30px;
+    }
+
+    .pic{
+        width: 100px;
+        height: 100px;
+        display: inline-block;
+
+    }
+    .pic img {
+        width: 100px;
+        height: 100px;
+    }
+
+</style>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-productIn-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">资产名称：</label>
+            <div class="col-sm-8">
+                <input  id="name" name="name" class="form-control" type="text" required="required"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">类型：</label>
+            <div class="col-sm-8">
+                <select id="type" name="type" class="form-control m-b" th:with="type=${@dict.getType('zc_type')}">
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">规格型号：</label>
+            <div class="col-sm-8">
+                <input id="assetSpecification" name="assetSpecification" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">品牌：</label>
+            <div class="col-sm-8">
+                <input id="brand" name="brand" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">单位：</label>
+            <div class="col-sm-8">
+                <select id="units" name="units" class="form-control m-b" th:with="type=${@dict.getType('zc_unit')}">
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">数量：</label>
+            <div class="col-sm-8">
+                <input id="number" name="number" class="form-control" type="text" onkeyup="this.value=this.value.replace(/\D|^0/g,'')" onafterpaste="this.value=this.value.replace(/\D|^0/g,'')" value="1" required/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">供货商：</label>
+            <div class="col-sm-8">
+                <input id="supplier" name="supplier" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">资产原值：</label>
+            <div class="col-sm-8">
+                <input id="price" name="price" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">购置时间：</label>
+            <div class="col-sm-8">
+                <div class="input-group date">
+                    <input class="form-control" type="text" id="purchasingTime" placeholder="购置时间"
+                           name="purchasingTime"/>
+                </div>
+            </div>
+        </div>
+        <div class="from-group">
+            <label class="col-sm-3 control-label"> 上传文件：</label>
+            <div class="col-sm-8">
+                <div style="position: relative">
+                    <div class="uploadImgBtn" id="uploadImgBtn">
+                        <input class="uploadImg" type="file" name="file" multiple id="file">
+                    </div>
+                    <div id="picture">
+                    </div>
+                    <div style="color:#9b9b9b;font-size:12px;margin-top:6px;">可以上传一张资产图片，且大小小于3M。</div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: datetimepicker-js"/>
+<script type="text/javascript">
+    var prefix = ctx + "property/productIn"
+    /*$("#form-productIn-add").validate({
+        rules:{
+            name:{
+                required:true,
+            },
+            number:{
+                required:true,
+            },
+        }
+    });
+*/
+    //上传文件图片
+    $(document).ready(function () {
+        //为外面的盒子绑定一个点击事件
+        $("#uploadImgBtn").click(function () {
+            /*
+            1、先获取input标签
+            2、给input标签绑定change事件
+            3、把图片回显
+             */
+//            1、先回去input标签
+            var $input = $("#file");
+//                console.log($input)
+//            2、给input标签绑定change事件
+            $input.on("change", function () {
+//                    console.log(this)
+                //补充说明：因为我们给input标签设置multiple属性，因此一次可以上传多个文件
+                //获取选择图片的个数
+                var files = this.files;
+                var length = files.length;
+//                    console.log("选择了"+length+"张图片");
+                //3、回显
+                $.each(files, function (key, value) {
+                    //每次都只会遍历一个图片数据
+                    var div = document.createElement("div"),
+                        img = document.createElement("img"),
+                        btn = document.createElement("button");
+                    div.className = "pic";
+                    img.className = "imgs";
+                    div.style.position = "relative";
+                    div.style.marginRight = "10px";
+
+                    var fr = new FileReader();
+                    fr.onload = function () {
+                        img.src = this.result;
+                        btn.style.width = "100px";
+                        btn.style.color = "#ffffff";
+                        btn.style.backgroundColor = "#ff4f4d";
+                        btn.style.position = "absolute";
+                        btn.style.bottom = "0px";
+                        btn.innerHTML = "删除";
+                        btn.style.border = "none";
+                        btn.style.borderRadius = "3px";
+                        btn.type = "button";
+                        btn.classList.add("tupian");
+                        div.appendChild(btn)
+                        div.appendChild(img);
+                        if ($(".tupian").length < 1) {
+                            $("#picture").append(div);
+                        } else {
+                            layer.msg("您上传的图片太多了！")
+                        }
+                        $(".tupian").on("click", function () {
+                            $(this).parent().remove();
+                        })
+                    }
+                    fr.readAsDataURL(value);
+                })
+            })
+            //4、我们把当前input标签的id属性remove
+            $input.removeAttr("id");
+            //我们做个标记，再class中再添加一个类名就叫test
+            var newInput = '<input class="uploadImg test" type="file" name="file" multiple id="file">';
+            $(this).append($(newInput));
+
+        })
+    })
+
+    function submitHandler() {
+        //获取资产的参数
+        var name = $("#name").val();
+        var type = $("#type").val();
+        var assetSpecification = $("#assetSpecification").val();
+        var brand = $("#brand").val();
+        var units = $("#units").val();
+        var number = $("#number").val();
+        var supplier = $("#supplier").val();
+        var price = $("#price").val();
+        var purchasingTime = $("#purchasingTime").val();
+        var imgs = document.getElementsByClassName("imgs");
+        if (imgs.length == 0){
+            imgs = null;
+        }else {
+            imgs = imgs[0].src
+        }
+        /*return
+        var b = [];
+        for (var i = 0; i < imgs.length; i++) {
+            b.push({img: imgs[i].src});
+        }
+        var picture = JSON.stringify(b)*/
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: prefix + "/add",
+                data: {
+                    "name": name,
+                    "type": type,
+                    "assetSpecification": assetSpecification,
+                    "brand": brand,
+                    "units": units,
+                    "number": number,
+                    "supplier": supplier,
+                    "price": price,
+                    "purchasingTime": purchasingTime,
+                    "picture": imgs
+                },
+                async: false,
+                error: function (request) {
+                    $.modal.alertError("系统错误");
+                },
+                success: function (data) {
+                    $.operate.successCallback(data);
+                }
+            })
+    }
+
+    //时间控件
+    $(function () {
+        laydate.render({
+            elem: '#purchasingTime'
+            ,trigger: 'click'
+        })
+    });
+
+</script>
+</body>
+</html>

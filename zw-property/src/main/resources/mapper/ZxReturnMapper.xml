@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hp.property.mapper.ZxReturnMapper">
+    
+    <resultMap type="ZxChange" id="ZxChangeResult">
+        <id property="id"    column="id"    />
+        <result property="assetsId"    column="assets_id"    />
+        <result property="changeType"    column="change_type"    />
+        <result property="submittedDepartment"    column="submitted_department"    />
+        <result property="submitOne"    column="submit_one"    />
+        <result property="useDepartment"    column="use_department"    />
+        <result property="users"    column="users"    />
+        <result property="extend1"    column="extend1"    />
+        <result property="extend2"    column="extend2"    />
+        <result property="extend3"    column="extend3"    />
+        <result property="extend4"    column="extend4"    />
+        <result property="extend5"    column="extend5"    />
+        <result property="assetNum"    column="asset_num"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="brand"    column="brand"    />
+        <result property="assetSpecification"    column="asset_specification"    />
+        <result property="number"    column="number"    />
+        <result property="units"    column="units"    />
+        <result property="shareTime"  column="share_time"   />
+        <result property="deptName"     column="dept_name"  />
+    </resultMap>
+
+    <resultMap type="ZxAssetManagement" id="ZxAssetManagementResult">
+        <id property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="assetNum"    column="asset_num"    />
+        <result property="brand"    column="brand"    />
+        <result property="assetSpecification"    column="asset_specification"    />
+        <result property="number"    column="number"    />
+        <result property="type"    column="type"    />
+        <result property="units"    column="units"    />
+        <result property="supplier"    column="supplier"    />
+        <result property="picture"    column="picture"    />
+        <result property="price"    column="price"    />
+        <result property="purchasingTime"    column="purchasing_time"    />
+        <result property="storageTime"    column="storage_time"    />
+        <result property="warehousingCampus"    column="warehousing_campus"    />
+        <result property="state"    column="state"    />
+        <result property="operator"    column="operator"    />
+        <result property="location"    column="location"    />
+        <result property="recipientsTime"    column="recipients_time"    />
+        <result property="repairTime"    column="repair_time"    />
+        <result property="transferTime"    column="transfer_time"    />
+        <result property="discardTime"    column="discard_time"    />
+        <result property="returnTime"    column="return_time"    />
+        <result property="campus"    column="campus"    />
+        <result property="department"    column="department"    />
+        <result property="extend1"    column="extend1"    />
+        <result property="extend2"    column="extend2"    />
+        <result property="extend3"    column="extend3"    />
+        <result property="extend4"    column="extend4"    />
+        <result property="extend5"    column="extend5"    />
+        <result property="shareTime"  column="share_time"   />
+        <result property="useDepartment"    column="use_department"    />
+        <result property="users"    column="users"    />
+        <result property="deptName"     column="dept_name"  />
+        <result property="branch"     column="branch"   />
+        <result property="reception"    column="reception"  />
+        <result property="place"     column="place"   />
+        <result property="submittedDepartment"    column="submitted_department"  />
+        <result property="submitOne"    column="submit_one"  />
+    </resultMap>
+
+
+    <sql id="selectZxAssetManagementVo">
+    select a.id, a.name, a.asset_num, a.brand, a.asset_specification, a.number, a.type, a.units, a.state, a.warehousing_campus, a.operator, a.location, a.recipients_time, a.return_time, a.campus, a.department, c.submitted_department, c.submit_one, c.change_type, c.extend1, c.use_department, c.users
+    FROM `zx_change` c LEFT join `zx_asset_management` a ON c.assets_id= a.id  LEFT JOIN `sys_dept` d
+        ON c.extend4 = d.dept_id
+    </sql>
+
+
+    <sql id="selectZxChangeVo">
+        select * from zx_change
+    </sql>
+
+    <!-- 查询退还列表 -->
+    <select id="selectReturnList" parameterType="ZxChange" resultMap="ZxChangeResult">
+        select c.*,am.`name`,am.asset_num,am.type,am.brand,am.asset_specification,am.number,am.units,d.dept_name
+        from zx_change c
+        left join zx_asset_management am on c.assets_id = am.id
+        left join sys_dept d on c.extend5 = d.dept_id
+        <where>
+            c.change_type = 7
+            <if test="name != null  and name != ''"> and am.name like concat('%', #{name}, '%')</if>
+            <if test="assetNum != null  and assetNum != ''"> and am.asset_num like concat('%', #{assetNum}, '%')</if>
+            <if test="submittedDepartment != null "> and c.submitted_department = #{submittedDepartment}</if>
+            <if test="submitOne != null  and submitOne != ''"> and c.submit_one like concat('%', #{submitOne}, '%')</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and c.share_time &gt;= #{params.beginTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and c.share_time &lt;= #{params.endTime}
+            </if>
+            <if test="extend5 != null and extend5 != ''"> and c.extend5 = #{extend5}</if>
+        </where>
+        ORDER BY c.extend1 desc
+    </select>
+
+    
+    <select id="selectZxChangeByAssetsId" parameterType="Long" resultMap="ZxChangeResult">
+        <include refid="selectZxChangeVo"/>
+        where assets_id = #{id}
+    </select>
+
+
+    <select id="selectZxAssetManagementList" parameterType="ZxChange" resultMap="ZxAssetManagementResult">
+        <include refid="selectZxAssetManagementVo"/>
+        <where>
+            <if test="name != null  and name != ''"> and a.name like concat('%', #{name}, '%')</if>
+            <if test="assetNum != null  and assetNum != ''"> and a.asset_num = #{assetNum}</if>
+            <if test="assetSpecification != null  and assetSpecification != ''"> and a.asset_specification = #{assetSpecification}</if>
+            <if test="useDepartment != null and useDepartment != ''"> and c.use_department = #{useDepartment}</if>
+            <if test="extend1 != null  and extend1 != ''">
+              and date_format(c.extend1,'%y%m%d') &gt;= date_format(SUBSTR(#{extend1} FROM 1 FOR 10),'%y%m%d')
+                and date_format(c.extend1,'%y%m%d') &lt;= date_format(SUBSTR(#{extend1} FROM 14 FOR 10),'%y%m%d')</if>
+            <if test="users != null  and users != ''"> and c.users like concat('%', #{users}, '%')</if>
+            <if test="extend5 != null  and extend5 != ''"> and a.campus = #{extend5}</if>
+           and not c.change_type=1
+        </where>
+        ORDER BY c.extend1 desc
+    </select>
+
+    <!-- 通过id查询详情 -->
+    <select id="selectZxAssetManagementById" parameterType="Long" resultMap="ZxAssetManagementResult">
+        select c.share_time,c.use_department,c.users,c.submitted_department,c.submit_one,c.extend2 reception,sd.dept_name place,am.*,d.dept_name,dept.dept_name branch
+        from zx_change c
+        left join zx_asset_management am on c.assets_id = am.id
+        left join sys_dept d on c.extend5 = d.dept_id
+		left join sys_dept dept on dept.dept_id = am.warehousing_campus
+		left join sys_dept sd on sd.dept_id = c.extend3
+        where c.id = #{id}
+    </select>
+
+    <!-- 弹框（退还） -->
+    <select id="selectAssetManagementList" resultMap="ZxAssetManagementResult" parameterType="ZxAssetManagement">
+        select am.*,d.dept_name from zx_asset_management am
+        left join sys_dept d on d.dept_id = am.warehousing_campus
+        <where>
+            am.state=2 and am.extend3 = '0'
+            <if test="name != null  and name != ''"> and am.name like concat('%', #{name}, '%')</if>
+            <if test="extend1 != null and extend1 != '' "> and am.extend1 = #{extend1}</if>
+            <if test="extend2 != null and extend2 != '' "> and am.extend2 like concat('%', #{extend2}, '%')</if>
+            <if test="campus != null "> and am.campus = #{campus}</if>
+        </where>
+    </select>
+
+
+    <update id="updateManagementStateById" parameterType="Long">
+        update zx_asset_management
+        set state=1,return_time=sysdate()
+        where id = #{id}
+    </update>
+
+
+    <insert id="insertChange" parameterType="ZxChange">
+        insert into zx_change
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null ">id,</if>
+            <if test="assetsId != null ">assets_id,</if>
+            <if test="changeType != null ">change_type,</if>
+            <if test="submittedDepartment != null ">submitted_department,</if>
+            <if test="submitOne != null  and submitOne != ''">submit_one,</if>
+            <if test="useDepartment != null ">use_department,</if>
+            <if test="users != null  and users != ''">users,</if>
+            <if test="extend2 != null  and extend2 != ''">extend2,</if>
+            <if test="extend3 != null  and extend3 != ''">extend3,</if>
+            <if test="extend4 != null  and extend4 != ''">extend4,</if>
+            <if test="extend5 != null  and extend5 != ''">extend5,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null ">#{id},</if>
+            <if test="assetsId != null ">#{assetsId},</if>
+            <if test="changeType != null ">#{changeType},</if>
+            <if test="submittedDepartment != null ">#{submittedDepartment},</if>
+            <if test="submitOne != null  and submitOne != ''">#{submitOne},</if>
+            <if test="useDepartment != null ">#{useDepartment},</if>
+            <if test="users != null  and users != ''">#{users},</if>
+            <if test="extend2 != null  and extend2 != ''">#{extend2},</if>
+            <if test="extend3 != null  and extend3 != ''">#{extend3},</if>
+            <if test="extend4 != null  and extend4 != ''">#{extend4},</if>
+            <if test="extend5 != null  and extend5 != ''">#{extend5},</if>
+        </trim>
+    </insert>
+
+
+    <select id=" selectZxAssetManagementsById" parameterType="ZxAssetManagement" resultMap="ZxAssetManagementResult">
+        <include refid="selectZxAssetManagementVo"/>
+        <where>
+            <if test="name != null  and name != ''"> and a.name like concat('%', #{name}, '%')</if>
+            <if test="assetNum != null  and assetNum != ''"> and a.asset_num = #{assetNum}</if>
+            <if test="brand != null  and brand != ''"> and a.brand = #{brand}</if>
+            <if test="assetSpecification != null  and assetSpecification != ''"> and a.asset_specification = #{assetSpecification}</if>
+            <if test="number != null "> and a.number = #{number}</if>
+            <if test="type != null "> and a.type = #{type}</if>
+            <if test="units != null "> and a.units = #{units}</if>
+            <if test="supplier != null  and supplier != ''"> and a.supplier = #{supplier}</if>
+            <if test="picture != null  and picture != ''"> and a.picture = #{picture}</if>
+            <if test="price != null "> and a.price = #{price}</if>
+            <if test="purchasingTime != null "> and a.purchasing_time = #{purchasingTime}</if>
+            <if test="storageTime != null "> and a.storage_time = #{storageTime}</if>
+            <if test="warehousingCampus != null "> and a.warehousing_campus = #{warehousingCampus}</if>
+            <if test="state != null ">and a.state=#{state}</if>
+            <if test="operator != null  and operator != ''"> and a.operator = #{operator}</if>
+            <if test="location != null "> and a.location = #{location}</if>
+            <if test="recipientsTime != null "> and a.recipients_time = #{recipientsTime}</if>
+            <if test="repairTime != null "> and a.repair_time = #{repairTime}</if>
+            <if test="transferTime != null "> and a.transfer_time = #{transferTime}</if>
+            <if test="discardTime != null "> and a.discard_time = #{discardTime}</if>
+            <if test="campus != null "> and a.campus = #{campus}</if>
+            <if test="department != null "> and a.department = #{department}</if>
+            <if test="extend1 != null  and extend1 != ''"> and a.extend1 = #{extend1}</if>
+            <if test="extend2 != null  and extend2 != ''"> and a.extend2 like concat('%', #{extend2}, '%')</if>
+            <if test="returnTime != null and returnTime != ''">
+                and a.return_time = #{returnTime}
+            </if>
+            <if test="extend3 != null  and extend3 != ''"> and a.extend3 = #{extend3}</if>
+            <if test="extend4 != null  and extend4 != ''">
+                and a.return_time &gt;= date_format(SUBSTR(#{extend4} FROM 1 FOR 10),'%y%m%d')
+                and a.return_time &lt;= date_format(SUBSTR(#{extend4} FROM 14 FOR 10),'%y%m%d')</if>
+            <if test="extend5 != null  and extend5 != ''"> and a.extend5 = #{extend5}</if>
+            and not c.change_type=1
+            and a.id in
+            <foreach collection="array" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+        ORDER BY c.extend1
+    </select>
+    <select id="selectManagementList" parameterType="ZxAssetManagement" resultMap="ZxAssetManagementResult">
+        <include refid="selectZxAssetManagementVo"/>
+        <where>
+            <if test="name != null  and name != ''"> and a.name like concat('%', #{name}, '%')</if>
+            <if test="assetNum != null  and assetNum != ''"> and a.asset_num = #{assetNum}</if>
+            <if test="assetSpecification != null  and assetSpecification != ''"> and a.asset_specification = #{assetSpecification}</if>
+            <if test="extend2 != null and extend2 != ''"> and c.use_department = #{extend2}</if>
+            <if test="extend1 != null  and extend1 != ''">
+                and date_format(c.extend1,'%y%m%d') &gt;= date_format(SUBSTR(#{extend1} FROM 1 FOR 10),'%y%m%d')
+                and date_format(c.extend1,'%y%m%d') &lt;= date_format(SUBSTR(#{extend1} FROM 14 FOR 10),'%y%m%d')</if>
+            <if test="extend3 != null  and extend3 != ''"> and c.users like concat('%', #{extend3}, '%')</if>
+            <if test="extend5 != null  and extend5 != ''"> and a.campus = #{extend5}</if>
+            and not c.change_type=1
+        </where>
+        ORDER BY c.extend1 desc
+    </select>
+
+</mapper>

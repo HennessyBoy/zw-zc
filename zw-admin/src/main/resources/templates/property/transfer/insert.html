@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('查询未报废信息')" />
+    <script th:src="@{/ajax/libs/laydate/laydate.js}"></script>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <input type="hidden" id="deptId" name="extend5">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            资产名称：<input type="text" name="name"/>
+                        </li>
+                        <li>
+                            使用人：<input type="text" name="extend2"/>
+                        </li>
+                        <li>
+                            使用部门：
+                            <select name="extend1" th:with="type=${@dict.getType('zc_department')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li style="width: 100%;text-align: center">
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table" data-mobile-responsive="true"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var types = [[${@dict.getType('zc_type')}]];
+    var unit = [[${@dict.getType('zc_unit')}]];
+    var dept = [[${@dict.getType('zc_department')}]];
+    var state=[[${@dict.getType('zc_state')}]];
+    var prefix = ctx + "property/transfer";
+
+    $(function() {
+        var options = {
+            url: prefix + "/inserts",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            detailUrl: prefix + "/one/{id}",
+            modalName: "资产转移",
+            columns: [{
+                checkbox: true
+            },
+            {
+                field : 'id',
+                title : '资产ID'
+            },
+            {
+                field : 'name',
+                title : '资产名称'
+            },
+            {
+                field : 'assetNum',
+                title : '资产编号'
+            },
+            {
+                field : 'type',
+                title : '资产分类',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    return $.table.selectDictLabel(types, value);
+                }
+            },
+            {
+                field : 'brand',
+                title : '品牌'
+            },
+            {
+                field : 'assetSpecification',
+                title : '资产规格'
+            },
+            {
+                field : 'number',
+                title : '数量'
+            },
+            {
+                field : 'units',
+                title : '单位',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    return $.table.selectDictLabel(unit, value);
+                }
+            },
+            {
+                field : 'supplier',
+                title : '供应商'
+            },
+            {
+                field: 'extend1',
+                title: '使用部门',
+                formatter: function(value, row, index) {
+                    return $.table.selectDictLabel(dept,value);
+                }
+            },
+            {
+                field: 'extend2',
+                title: '使用人'
+            },
+            {
+                field: 'deptName',
+                title: '所属部门'
+            },
+            {
+                field: 'state',
+                title: '物品状态',
+                formatter: function(value, row, index) {
+                    console.log(value);
+                    return $.table.selectDictLabel(state,value);
+                }
+            }]
+        };
+        $.table.init(options);
+    });
+
+    /* 添加用户-选择用户-提交 */
+    function submitHandler(index, layero) {
+        var rows = $.table.selectFirstColumns();
+        if (rows.length == 0) {
+            $.modal.alertWarning("请至少选择一条记录");
+            return;
+        }
+        $.modal.close();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('资产入库')" />
+    <th:block th:include="include :: layout-latest-css" />
+    <th:block th:include="include :: ztree-css" />
+    <script th:src="@{/ajax/libs/laydate/laydate.js}"></script>
+</head>
+<body class="gray-bg">
+<!--<div class="ui-layout-west">
+    <div class="box box-main">
+        <div class="box-header">
+            <div class="box-title">
+                <i class="fa icon-grid"></i> 部门
+            </div>
+            <div class="box-tools pull-right">
+                <a type="button" class="btn btn-box-tool" href="#" onclick="dept()" title="管理部门"><i class="fa fa-edit"></i></a>
+                <button type="button" class="btn btn-box-tool" id="btnExpand" title="展开" style="display:none;"><i class="fa fa-chevron-up"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnCollapse" title="折叠"><i class="fa fa-chevron-down"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnRefresh" title="刷新部门"><i class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+        <div class="ui-layout-content">
+            <div id="tree" class="ztree"></div>
+        </div>
+    </div>
+</div>-->
+<div class="ui-layout-center">
+    <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <input type="hidden" id="deptId" name="warehousingCampus">
+                    <input type="hidden" id="parentId" name="parentId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <p>入库时间：</p>
+                                <input type="text" id="storageTime" name="storageTime" />
+                            </li>
+                            <li>
+                                <p>资产名称：</p>
+                                <input type="text" name="name"/>
+                            </li>
+                            <li>
+                                <p>资产编号：</p>
+                                <input type="text" name="assetNum"/>
+                            </li>
+                            <li>
+                                <p>购置时间：</p>
+                                <input type="text" id="purchasingTime" name="purchasingTime" />
+                            </li>
+                            <li>
+                                <p>操作人员：</p>
+                                <input type="text" name="operator"/>
+                            </li>
+                            <li>
+                                <p>领用处：</p>
+                                <select id="warehousingCampus" name="warehousingCampus" type="text">
+                                    <option value="">全部</option>
+                                    <option th:each="obj,eStat:${school}" th:value="${obj.deptId}"
+                                            th:text="${obj.deptName}"></option>
+                                </select>
+                            </li>
+                            <li style="width: 100%;text-align: center">
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="property:productIn:add">
+                    <i class="fa fa-plus"></i> 入库登记
+                </a>
+                <!--<a class="btn btn-info" onclick="$.table.importExcel()" shiro:hasPermission="property:productIn:import">
+                    <i class="fa fa-upload"></i> 标签打印
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="property:productIn:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table" data-mobile-responsive="true"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: layout-latest-js" />
+    <th:block th:include="include :: ztree-js" />
+    <script th:inline="javascript">
+        var zc_unit = [[${@dict.getType('zc_unit')}]];
+        var editFlag = [[${@permission.hasPermi('system:productIn:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('system:productIn:remove')}]];
+        var prefix = ctx + "property/productIn";
+
+        $(function() {
+            /*var panehHidden = false;
+            if ($(this).width() < 769) {
+                panehHidden = true;
+            }
+            $('body').layout({ initClosed: panehHidden, west__size: 185 });*/
+            queryList();
+            queryDeptTree();
+        });
+
+        function queryList(){
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                detailUrl: prefix+"/one/{id}",
+                modalName: "资产信息",
+                columns: [{
+                    checkbox: true
+                },
+                    {
+                        field : 'assetNum',
+                        title : '资产编号'
+                    },
+                    {
+                        field : 'name',
+                        title : '资产名称'
+                    },
+                    {
+                        field : 'brand',
+                        title : '品牌'
+                    },
+                    {
+                        field : 'assetSpecification',
+                        title : '资产规格'
+                    },
+                    {
+                        field : 'number',
+                        title : '数量'
+                    },
+
+                    {
+                        field : 'units',
+                        title : '单位',
+                        formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(zc_unit,value);
+                        }
+                    },
+                    {
+                        field : 'supplier',
+                        title : '供货商'
+                    },
+                    {
+                        field : 'price',
+                        title : '资产原值(元)',
+                    },
+                    {
+                        field : 'purchasingTime',
+                        title : '购置时间'
+                    },
+                    {
+                        field : 'storageTime',
+                        title : '入库时间',
+                    },
+                    {
+                        field : 'extend5',
+                        title : '入库处',
+                    },
+                    {
+                        field : 'operator',
+                        title : '操作人员',
+                    }]
+            };
+            $.table.init(options);
+        };
+
+        function queryDeptTree()
+        {
+            var url = ctx + "system/dept/treeData";
+            var options = {
+                url: url,
+                expandLevel: 2,
+                onClick : zOnClick
+            };
+            $.tree.init(options);
+
+            function zOnClick(event, treeId, treeNode) {
+                $("#deptId").val(treeNode.id);
+                $("#parentId").val(treeNode.pId);
+                $.table.search();
+            }
+        }
+        function zcchange(id) {
+            var _url = prefix + "/oneChangee/"+id;
+            var options = {
+                title: $.table._option.modalName + "变更记录",
+                width: '1500px',
+                height: '1500px',
+                url: _url,
+                skin: 'layui-layer-gray',
+                btn: ['关闭'],
+                yes: function (index, layero) {
+                    layer.close(index);
+                }
+            };
+            $.modal.openOptions(options);
+        }
+        // 入库时间
+        $(function () {
+            laydate.render({
+                elem: '#storageTime'
+                ,trigger:'click'
+                ,type:'date'
+                ,range:true
+            });
+        });
+        $(function () {
+            laydate.render({
+                elem: '#purchasingTime'
+                ,trigger:'click'
+                ,type:'date'
+                ,range:true
+            });
+        });
+
+    </script>
+</body>
+</html>

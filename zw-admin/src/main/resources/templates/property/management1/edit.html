@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改资产变更信息')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<style>
+
+    .uploadImgBtn {
+        width: 106px;
+        height: 36px;
+        display: inline-block;
+        cursor: pointer;
+        position: relative;
+        background: url("https://whhp.oss-cn-hangzhou.aliyuncs.com/app/photo4.png") no-repeat;
+        -webkit-background-size: cover;
+        background-size: cover;
+    }
+
+    input[type="file"]{
+        width: 100px;
+        opacity: 0;
+        position: absolute;
+        top: 0px;
+        height: 30px;
+    }
+
+    .pic{
+        width: 100px;
+        height: 100px;
+        display: inline-block;
+
+    }
+    .pic img {
+        width: 100px;
+        height: 100px;
+    }
+
+</style>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-management1-edit" th:object="${zxAssetManagement}">
+
+            <input name="id" th:field="*{id}" type="hidden">  <!--隐藏的id-->
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">资产编号：</label>
+                <div class="col-sm-8">
+                    <input name="assetNum" th:field="*{assetNum}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">资产名称：</label>
+                <div class="col-sm-8">
+                    <input name="name" th:field="*{name}" class="form-control" type="text">
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">品牌：</label>
+                <div class="col-sm-8">
+                    <input name="brand" th:field="*{brand}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">资产规格：</label>
+                <div class="col-sm-8">
+                    <input name="assetSpecification" th:field="*{assetSpecification}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">数量：</label>
+                <div class="col-sm-8">
+                    <input name="number" th:field="*{number}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">资产类型：</label>
+                <div class="col-sm-8">
+                    <select name="type"  th:with="type=${@dict.getType('zc_type')}" disabled="disabled">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{type}"> </option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">单位：</label>
+                <div class="col-sm-8">
+                    <select name="units"  th:with="type=${@dict.getType('zc_unit')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{units}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">供货商：</label>
+                <div class="col-sm-8">
+                    <input name="supplier" th:field="*{supplier}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">资产原值：</label>
+                <div class="col-sm-8">
+                    <input name="price" th:field="*{price}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">购置时间：</label>
+                <div class="col-sm-8">
+                    <input name="purchasingTime" th:field="*{purchasingTime}" class="form-control" type="text">
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">状态：</label>
+                <div class="col-sm-8">
+                    <select name="state" th:with="type=${@dict.getType('zc_state')}" disabled="disabled">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{state}" ></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">存放地点：</label>
+                <div class="col-sm-8">
+                    <select name="location" th:with="type=${@dict.getType('zc_location')}" disabled="disabled">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{location}"></option >
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">使用部门：</label>
+                <div class="col-sm-8">
+                    <select name="extend1" th:with="type=${@dict.getType('zc_department')}" disabled="disabled">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{extend1}" disabled="disabled"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" >
+                <label class="col-sm-3 control-label">使用人：</label>
+                <div class="col-sm-8" >
+                    <input name="extend2" th:field="*{extend2}" class="form-control" type="text" readonly="readonly">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "property/management1";
+        $("#form-management1-edit").validate({
+            focusCleanup: true
+        });
+
+
+        $("input[name='purchasingTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        $(document).ready(function () {
+            //为外面的盒子绑定一个点击事件
+            $("#uploadImgBtn").click(function () {
+                /*
+                1、先获取input标签
+                2、给input标签绑定change事件
+                3、把图片回显
+                 */
+//            1、先回去input标签
+                var $input = $("#file");
+//                console.log($input)
+//            2、给input标签绑定change事件
+                $input.on("change", function () {
+//                    console.log(this)
+                    //补充说明：因为我们给input标签设置multiple属性，因此一次可以上传多个文件
+                    //获取选择图片的个数
+                    var files = this.files;
+                    var length = files.length;
+//                    console.log("选择了"+length+"张图片");
+                    //3、回显
+                    $.each(files, function (key, value) {
+                        //每次都只会遍历一个图片数据
+                        var div = document.createElement("div"),
+                            img = document.createElement("img"),
+                            btn = document.createElement("button");
+                        div.className = "pic";
+                        img.className = "imgs";
+                        div.style.position = "relative";
+                        div.style.marginRight = "10px";
+
+                        var fr = new FileReader();
+                        fr.onload = function () {
+                            img.src = this.result;
+                            btn.style.width = "100px";
+                            btn.style.color = "#ffffff";
+                            btn.style.backgroundColor = "#ff4f4d";
+                            btn.style.position = "absolute";
+                            btn.style.bottom = "0px";
+                            btn.innerHTML = "删除";
+                            btn.style.border = "none";
+                            btn.style.borderRadius = "3px";
+                            btn.type = "button";
+                            btn.classList.add("tupian");
+                            div.appendChild(btn)
+                            div.appendChild(img);
+                            if ($(".tupian").length < 3) {
+                                $("#picture").append(div);
+                            } else {
+                                layer.msg("您上传的图片太多了！")
+                            }
+                            $(".tupian").on("click", function () {
+                                $(this).parent().remove();
+                            })
+                        }
+                        fr.readAsDataURL(value);
+                    })
+                })
+                //4、我们把当前input标签的id属性remove
+                $input.removeAttr("id");
+                //我们做个标记，再class中再添加一个类名就叫test
+                var newInput = '<input class="uploadImg test" type="file" name="file" multiple id="file">';
+                $(this).append($(newInput));
+
+            })
+        })
+
+        function submitHandler() {
+
+            var groupId = $("select[name='group']").val()
+            if ($("#switch").val() == 0) {
+                $("#xianshi").attr('style', 'display:none')
+                groupId = null
+            }
+            //获取资产名称
+            var id = $("#id").val();
+            var name = $("#name").val();
+            var type = $("#type").val();
+            var assetSpecification = $("#assetSpecification").val();
+            var brand = $("#brand").val();
+            var units = $("#units").val();
+            var number = $("#number").val();
+            var supplier = $("#supplier").val();
+            var price = $("#price").val();
+            var purchasingTime = $("#purchasingTime").val();
+
+            var imgs = document.getElementsByClassName("imgs");
+            var b = [];
+            for (var i = 0; i < imgs.length; i++) {
+                b.push({img: imgs[i].src});
+            }
+            var picture = JSON.stringify(b)
+//            console.log(pics)
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: prefix + "/edit",
+                data: {
+                    "id": id,
+                    "name": name,
+                    "type": type,
+                    "assetSpecification": assetSpecification,
+                    "brand": brand,
+                    "units": units,
+                    "number": number,
+                    "supplier": supplier,
+                    "price": price,
+                    "purchasingTime": purchasingTime,
+                    "picture": picture
+                },
+                async: false,
+                error: function (request) {
+                    $.modal.alertError("系统错误");
+                },
+                success: function (data) {
+                    $.operate.successCallback(data);
+                }
+            })
+
+
+
+        }
+
+    </script>
+</body>
+</html>
